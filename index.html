@@ -18,7 +18,7 @@
 
     <script>
         function analyzeText() {
-            let encryptedText = document.getElementById("encryptedText").value;
+            let encryptedText = document.getElementById("encryptedText").value.trim();
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = "";
 
@@ -28,7 +28,12 @@
             }
 
             let parts = encryptedText.split("|");
-            let encryptedPart = parts[1]; // الجزء الذي يحتوي على الأحرف المرتبة
+            if (parts.length < 2) {
+                resultDiv.innerHTML = "⚠️ نص مشفر غير مكتمل";
+                return;
+            }
+
+            let encryptedPart = parts[1].trim(); // الجزء الذي يحتوي على الأحرف المرتبة
             
             // قائمة بالمعرفات المفترضة
             let ids = ["18e", "10y", "xyz", "abc"];
