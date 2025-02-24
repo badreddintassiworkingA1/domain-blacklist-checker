@@ -22,6 +22,9 @@
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = "";
 
+            // فك ترميز القيم المشفرة (%7C = |)
+            encryptedText = decodeURIComponent(encryptedText);
+
             if (!encryptedText.includes("|")) {
                 resultDiv.innerHTML = "⚠️ يرجى إدخال نص مشفر صحيح";
                 return;
