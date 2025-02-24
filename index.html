@@ -40,7 +40,7 @@
     <div id="error" class="error"></div>
 
     <script>
-        const API_KEY = "5080dae7dd3b96b06d66e69bc918e10d"; // استبدل هذا بمفتاح API الخاص بك
+        const API_KEY = "5080dae7dd3b96b06d66e69bc918e10d"; // استبدل هذا بمفتاح API الصحيح
         
         async function checkBlacklist() {
             let domains = document.getElementById("domains").value.split("\n").map(d => d.trim()).filter(d => d);
@@ -54,19 +54,20 @@
             resultDiv.innerHTML = "Checking...";
             errorDiv.innerHTML = "";
             
-            let domainList = domains.join(","); // تحويل القائمة إلى نص مفصول بفواصل
+            let domainList = domains.join(",");
             let url = `https://api.hetrixtools.com/v2/${API_KEY}/blacklist-check/bulk/${domainList}/`;
             
             try {
                 let response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
                 let data = await response.json();
+                
+                if (data.status === "ERROR") {
+                    throw new Error(data.error_message || "Unknown API error");
+                }
                 
                 let table = `<table><tr><th>Domain</th><th>Blacklist Status</th><th>Listed In</th></tr>`;
                 
-                for (let domain in data) {
+                for (let domain of Object.keys(data)) {
                     if (data[domain].blacklisted_count > 0) {
                         let lists = data[domain].blacklisted_on.map(list => `⚠️ ${list}`).join(", ");
                         table += `<tr><td>${domain}</td><td style="color:red;">Blacklisted (${data[domain].blacklisted_count} listings)</td><td>${lists}</td></tr>`;
@@ -78,7 +79,8 @@
                 table += "</table>";
                 resultDiv.innerHTML = table;
             } catch (error) {
-                errorDiv.innerHTML = `Error fetching data: ${error.message}`;
+                errorDiv.innerHTML = `❌ Error: ${error.message}`;
+                resultDiv.innerHTML = "";
             }
         }
     </script>
