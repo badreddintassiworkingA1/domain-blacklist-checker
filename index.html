@@ -26,6 +26,10 @@
         th {
             background-color: #f2f2f2;
         }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +37,7 @@
     <textarea id="domains" rows="5" cols="50" placeholder="Enter domains, one per line..."></textarea><br>
     <button onclick="checkBlacklist()">Check Blacklist</button>
     <div id="result"></div>
+    <div id="error" class="error"></div>
 
     <script>
         const API_KEY = "5080dae7dd3b96b06d66e69bc918e10d"; // استبدل هذا بمفتاح API الخاص بك
@@ -45,13 +50,18 @@
             }
 
             let resultDiv = document.getElementById("result");
+            let errorDiv = document.getElementById("error");
             resultDiv.innerHTML = "Checking...";
+            errorDiv.innerHTML = "";
             
             let table = `<table><tr><th>Domain</th><th>Blacklist Status</th></tr>`;
             
             for (let domain of domains) {
                 try {
                     let response = await fetch(`https://api.hetrixtools.com/v2/${API_KEY}/blacklist-check/domain/${domain}/`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
                     let data = await response.json();
                     
                     if (data.blacklisted_count > 0) {
@@ -61,6 +71,7 @@
                     }
                 } catch (error) {
                     table += `<tr><td>${domain}</td><td style="color:orange;">Error Checking</td></tr>`;
+                    errorDiv.innerHTML += `Error checking ${domain}: ${error.message}<br>`;
                 }
             }
             
