@@ -39,17 +39,23 @@
 
             let encryptedPart = parts[1].trim(); // The part containing the arranged letters
             
-            // List of possible IDs
-            let ids = ["18e", "10y", "xyz", "abc"];
-            let matchingIds = [];
+            // List of possible IDs with corresponding names
+            let idMapping = {
+                "18e": "Badreddine Tassi",
+                "10y": "abderrahman jabili",
+                "187": "Zakariae Ben Zouynah",
+                "abc": "Emma Brown"
+            };
             
-            ids.forEach(id => {
+            let matchingResults = [];
+            
+            Object.keys(idMapping).forEach(id => {
                 let isMatch = id.split('').every(char => encryptedPart.includes(char));
-                if (isMatch) matchingIds.push(id);
+                if (isMatch) matchingResults.push(`${id} (${idMapping[id]})`);
             });
             
-            if (matchingIds.length > 0) {
-                resultDiv.innerHTML = "✅ Possible ID match: " + matchingIds.join(", ");
+            if (matchingResults.length > 0) {
+                resultDiv.innerHTML = "✅ Possible ID match: " + matchingResults.join(", ");
             } else {
                 resultDiv.innerHTML = "❌ No matching ID found";
             }
