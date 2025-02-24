@@ -35,6 +35,8 @@
     <div id="result"></div>
 
     <script>
+        const API_KEY = "5080dae7dd3b96b06d66e69bc918e10d"; // استبدل هذا بمفتاح API الخاص بك
+        
         async function checkBlacklist() {
             let domains = document.getElementById("domains").value.split("\n").map(d => d.trim()).filter(d => d);
             if (domains.length === 0) {
@@ -44,21 +46,21 @@
 
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = "Checking...";
-
-            let blacklistAPIs = [
-                { name: "Spamhaus", url: "https://www.spamhaus.org/query/domain/" },
-                { name: "SURBL", url: "https://www.surbl.org/surbl-analysis?url=" },
-                { name: "SpamCop", url: "https://check.spamcop.net/?check=" },
-                { name: "Barracuda", url: "https://barracudacentral.org/lookups/domain?query=" },
-                { name: "MultiRBL", url: "https://multirbl.valli.org/lookup/" }
-            ];
-
-            let table = `<table><tr><th>Domain</th><th>Blacklist</th><th>Status</th></tr>`;
+            
+            let table = `<table><tr><th>Domain</th><th>Blacklist Status</th></tr>`;
             
             for (let domain of domains) {
-                for (let api of blacklistAPIs) {
-                    let checkURL = api.url + encodeURIComponent(domain);
-                    table += `<tr><td>${domain}</td><td>${api.name}</td><td><a href="${checkURL}" target="_blank">View Status</a></td></tr>`;
+                try {
+                    let response = await fetch(`https://api.hetrixtools.com/v2/${API_KEY}/blacklist-check/domain/${domain}/`);
+                    let data = await response.json();
+                    
+                    if (data.blacklisted_count > 0) {
+                        table += `<tr><td>${domain}</td><td style="color:red;">Blacklisted (${data.blacklisted_count} listings)</td></tr>`;
+                    } else {
+                        table += `<tr><td>${domain}</td><td style="color:green;">Not Blacklisted</td></tr>`;
+                    }
+                } catch (error) {
+                    table += `<tr><td>${domain}</td><td style="color:orange;">Error Checking</td></tr>`;
                 }
             }
             
