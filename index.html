@@ -22,8 +22,9 @@
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = "";
 
-            // فك ترميز القيم المشفرة (%7C = |)
-            encryptedText = decodeURIComponent(encryptedText);
+            // فك ترميز القيم المشفرة (%7C = |) مرتين لضمان إزالة أي ترميز
+            encryptedText = decodeURIComponent(decodeURIComponent(encryptedText));
+            console.log("النص بعد فك التشفير: ", encryptedText);
 
             if (!encryptedText.includes("|")) {
                 resultDiv.innerHTML = "⚠️ يرجى إدخال نص مشفر صحيح";
