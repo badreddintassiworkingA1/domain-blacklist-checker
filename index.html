@@ -54,29 +54,31 @@
             resultDiv.innerHTML = "Checking...";
             errorDiv.innerHTML = "";
             
-            let table = `<table><tr><th>Domain</th><th>Blacklist Status</th></tr>`;
+            let domainList = domains.join(","); // تحويل القائمة إلى نص مفصول بفواصل
+            let url = `https://api.hetrixtools.com/v2/${API_KEY}/blacklist-check/bulk/${domainList}/`;
             
-            for (let domain of domains) {
-                try {
-                    let response = await fetch(`https://api.hetrixtools.com/v2/${API_KEY}/blacklist-check/domain/${domain}/`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    let data = await response.json();
-                    
-                    if (data.blacklisted_count > 0) {
-                        table += `<tr><td>${domain}</td><td style="color:red;">Blacklisted (${data.blacklisted_count} listings)</td></tr>`;
+            try {
+                let response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                let data = await response.json();
+                
+                let table = `<table><tr><th>Domain</th><th>Blacklist Status</th></tr>`;
+                
+                for (let domain in data) {
+                    if (data[domain].blacklisted_count > 0) {
+                        table += `<tr><td>${domain}</td><td style="color:red;">Blacklisted (${data[domain].blacklisted_count} listings)</td></tr>`;
                     } else {
                         table += `<tr><td>${domain}</td><td style="color:green;">Not Blacklisted</td></tr>`;
                     }
-                } catch (error) {
-                    table += `<tr><td>${domain}</td><td style="color:orange;">Error Checking</td></tr>`;
-                    errorDiv.innerHTML += `Error checking ${domain}: ${error.message}<br>`;
                 }
+                
+                table += "</table>";
+                resultDiv.innerHTML = table;
+            } catch (error) {
+                errorDiv.innerHTML = `Error fetching data: ${error.message}`;
             }
-            
-            table += "</table>";
-            resultDiv.innerHTML = table;
         }
     </script>
 </body>
