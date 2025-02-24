@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحليل التشفير</title>
+    <title>Decryption Analysis</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
         input, button { margin: 10px; padding: 8px; }
@@ -11,9 +11,9 @@
     </style>
 </head>
 <body>
-    <h2>تحليل التشفير ومعرفة المعرّف</h2>
-    <input type="text" id="encryptedText" placeholder="أدخل النص المشفر">
-    <button onclick="analyzeText()">تحليل</button>
+    <h2>Decryption Analysis & ID Matching</h2>
+    <input type="text" id="encryptedText" placeholder="Enter encrypted text">
+    <button onclick="analyzeText()">Analyze</button>
     <div id="result"></div>
 
     <script>
@@ -22,24 +22,24 @@
             let resultDiv = document.getElementById("result");
             resultDiv.innerHTML = "";
 
-            // فك ترميز القيم المشفرة (%7C = |) مرتين لضمان إزالة أي ترميز
+            // Decode encoded values (%7C = |) twice to ensure full decoding
             encryptedText = decodeURIComponent(decodeURIComponent(encryptedText));
-            console.log("النص بعد فك التشفير: ", encryptedText);
+            console.log("Decrypted text: ", encryptedText);
 
             if (!encryptedText.includes("|")) {
-                resultDiv.innerHTML = "⚠️ يرجى إدخال نص مشفر صحيح";
+                resultDiv.innerHTML = "⚠️ Please enter a valid encrypted text";
                 return;
             }
 
             let parts = encryptedText.split("|");
             if (parts.length < 2) {
-                resultDiv.innerHTML = "⚠️ نص مشفر غير مكتمل";
+                resultDiv.innerHTML = "⚠️ Incomplete encrypted text";
                 return;
             }
 
-            let encryptedPart = parts[1].trim(); // الجزء الذي يحتوي على الأحرف المرتبة
+            let encryptedPart = parts[1].trim(); // The part containing the arranged letters
             
-            // قائمة بالمعرفات المفترضة
+            // List of possible IDs
             let ids = ["18e", "10y", "xyz", "abc"];
             let matchingIds = [];
             
@@ -49,9 +49,9 @@
             });
             
             if (matchingIds.length > 0) {
-                resultDiv.innerHTML = "✅ المعرّف المحتمل: " + matchingIds.join(", ");
+                resultDiv.innerHTML = "✅ Possible ID match: " + matchingIds.join(", ");
             } else {
-                resultDiv.innerHTML = "❌ لم يتم العثور على معرف مطابق";
+                resultDiv.innerHTML = "❌ No matching ID found";
             }
         }
     </script>
