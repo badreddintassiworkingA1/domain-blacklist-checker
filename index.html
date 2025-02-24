@@ -3,84 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domain Blacklist Checker</title>
+    <title>تحليل التشفير</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center;
-        }
-        #result {
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        input, button { margin: 10px; padding: 8px; }
+        #result { margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h2>Domain Blacklist Checker</h2>
-    <textarea id="domains" rows="5" cols="50" placeholder="Enter domains, one per line..."></textarea><br>
-    <button onclick="checkBlacklist()">Check Blacklist</button>
+    <h2>تحليل التشفير ومعرفة المعرّف</h2>
+    <input type="text" id="encryptedText" placeholder="أدخل النص المشفر">
+    <button onclick="analyzeText()">تحليل</button>
     <div id="result"></div>
-    <div id="error" class="error"></div>
 
     <script>
-        const API_KEY = "5080dae7dd3b96b06d66e69bc918e10d"; // استبدل هذا بمفتاح API الصحيح
-        
-        async function checkBlacklist() {
-            let domains = document.getElementById("domains").value.split("\n").map(d => d.trim()).filter(d => d);
-            if (domains.length === 0) {
-                alert("Please enter at least one domain.");
+        function analyzeText() {
+            let encryptedText = document.getElementById("encryptedText").value;
+            let resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "";
+
+            if (!encryptedText.includes("|")) {
+                resultDiv.innerHTML = "⚠️ يرجى إدخال نص مشفر صحيح";
                 return;
             }
 
-            let resultDiv = document.getElementById("result");
-            let errorDiv = document.getElementById("error");
-            resultDiv.innerHTML = "Checking...";
-            errorDiv.innerHTML = "";
+            let parts = encryptedText.split("|");
+            let encryptedPart = parts[1]; // الجزء الذي يحتوي على الأحرف المرتبة
             
-            let domainList = domains.join(",");
-            let url = `https://api.hetrixtools.com/v2/${API_KEY}/blacklist-check/bulk/${domainList}/`;
+            // قائمة بالمعرفات المفترضة
+            let ids = ["18e", "10y", "xyz", "abc"];
+            let matchingIds = [];
             
-            try {
-                let response = await fetch(url);
-                let data = await response.json();
-                
-                if (data.status === "ERROR") {
-                    throw new Error(data.error_message || "Unknown API error");
-                }
-                
-                let table = `<table><tr><th>Domain</th><th>Blacklist Status</th><th>Listed In</th></tr>`;
-                
-                for (let domain of Object.keys(data)) {
-                    if (data[domain].blacklisted_count > 0) {
-                        let lists = data[domain].blacklisted_on.map(list => `⚠️ ${list}`).join(", ");
-                        table += `<tr><td>${domain}</td><td style="color:red;">Blacklisted (${data[domain].blacklisted_count} listings)</td><td>${lists}</td></tr>`;
-                    } else {
-                        table += `<tr><td>${domain}</td><td style="color:green;">Not Blacklisted</td><td>✅ Safe</td></tr>`;
-                    }
-                }
-                
-                table += "</table>";
-                resultDiv.innerHTML = table;
-            } catch (error) {
-                errorDiv.innerHTML = `❌ Error: ${error.message}`;
-                resultDiv.innerHTML = "";
+            ids.forEach(id => {
+                let isMatch = id.split('').every(char => encryptedPart.includes(char));
+                if (isMatch) matchingIds.push(id);
+            });
+            
+            if (matchingIds.length > 0) {
+                resultDiv.innerHTML = "✅ المعرّف المحتمل: " + matchingIds.join(", ");
+            } else {
+                resultDiv.innerHTML = "❌ لم يتم العثور على معرف مطابق";
             }
         }
     </script>
