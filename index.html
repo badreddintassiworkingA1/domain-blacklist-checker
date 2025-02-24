@@ -16,6 +16,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid black;
@@ -45,19 +46,19 @@
             resultDiv.innerHTML = "Checking...";
 
             let blacklistAPIs = [
-                "https://www.spamhaus.org/query/domain/",
-                "https://www.surbl.org/surbl-analysis?url=",
-                "https://check.spamcop.net/?check=",
-                "https://barracudacentral.org/lookups/domain?query=",
-                "https://multirbl.valli.org/lookup/"
+                { name: "Spamhaus", url: "https://www.spamhaus.org/query/domain/" },
+                { name: "SURBL", url: "https://www.surbl.org/surbl-analysis?url=" },
+                { name: "SpamCop", url: "https://check.spamcop.net/?check=" },
+                { name: "Barracuda", url: "https://barracudacentral.org/lookups/domain?query=" },
+                { name: "MultiRBL", url: "https://multirbl.valli.org/lookup/" }
             ];
 
             let table = `<table><tr><th>Domain</th><th>Blacklist</th><th>Status</th></tr>`;
             
             for (let domain of domains) {
                 for (let api of blacklistAPIs) {
-                    let checkURL = api + encodeURIComponent(domain);
-                    table += `<tr><td>${domain}</td><td>${api.split("/")[2]}</td><td><a href="${checkURL}" target="_blank">Check</a></td></tr>`;
+                    let checkURL = api.url + encodeURIComponent(domain);
+                    table += `<tr><td>${domain}</td><td>${api.name}</td><td><a href="${checkURL}" target="_blank">View Status</a></td></tr>`;
                 }
             }
             
